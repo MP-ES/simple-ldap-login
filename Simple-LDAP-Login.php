@@ -419,7 +419,7 @@ class SimpleLDAPLogin {
                 } else {
 
                     // Update user data
-                    wp_update_user(array("ID" => $user->ID) + $this->get_user_data($username, trim($this->get_setting('directory'))));
+                    wp_update_user(array("ID" => $user->ID) + $this->get_user_data($username, trim($this->get_setting('directory')), true));
 
                     // update user meta data
                     $user_meta_data = $this->get_user_meta_data($username, trim($this->get_setting('directory')));
@@ -549,18 +549,29 @@ class SimpleLDAPLogin {
         return apply_filters($this->prefix . 'user_has_groups', $result);
     }
 
-    function get_user_data($username, $directory) {
-        $user_data = array(
-            'user_pass' => md5(microtime()),
-            'user_login' => $username,
-            'user_nicename' => '',
-            'user_email' => '',
-            'display_name' => '',
-            'first_name' => '',
-            'last_name' => '',
-            'user_url' => '',
-            'role' => $this->get_setting('role')
-        );
+    function get_user_data($username, $directory, $update = false) {
+        if (!$update) {
+            $user_data = array(
+                'user_pass' => md5(microtime()),
+                'user_login' => $username,
+                'user_nicename' => '',
+                'user_email' => '',
+                'display_name' => '',
+                'first_name' => '',
+                'last_name' => '',
+                'user_url' => '',
+                'role' => $this->get_setting('role')
+            );
+        } else {
+            $user_data = array(
+                'user_nicename' => '',
+                'user_email' => '',
+                'display_name' => '',
+                'first_name' => '',
+                'last_name' => '',
+                'user_url' => ''
+            );
+        }
 
         if ($directory == "ad") {
             $userinfo = $this->adldap->user_info($username, array(
