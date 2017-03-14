@@ -3,7 +3,7 @@
   Plugin Name: Simple LDAP Login
   Plugin URI: http://clifgriffin.com/simple-ldap-login/
   Description:  Authenticate WordPress against LDAP.
-  Version: 1.8.0
+  Version: 1.8.1
   Author: Clif Griffin Development Inc.
   Author URI: http://cgd.io
  */
@@ -17,7 +17,7 @@ class SimpleLDAPLogin {
     var $adldap;
     var $ldap;
     var $network_version = null;
-    var $version = "180";
+    var $version = "181";
     // openssl constants
     private static $openssl_method = "AES-256-CBC";
 
@@ -204,7 +204,7 @@ class SimpleLDAPLogin {
             }
         }
 
-        if (trim($this->get_setting('version')) < $this->version || $this->get_setting('version') === false) {
+        if ($this->get_setting('version') === false || trim($this->get_setting('version')) < 180) {
             $this->add_setting('search_sub_ous', "false");
             $this->add_setting('group_base_dn', "");
             $this->add_setting('group_uid', "memberUid");
@@ -222,6 +222,10 @@ class SimpleLDAPLogin {
             $this->add_setting('user_meta_data', array());
             $this->add_setting('meta_data_suffix_ldap', 'ldap');
             $this->add_setting('meta_data_suffix_wp', 'wp');
+        }
+
+        if ($this->get_setting('version') === false || trim($this->get_setting('version')) < $this->version) {
+            // nothing to do
         }
 
         // Update version
@@ -413,6 +417,9 @@ class SimpleLDAPLogin {
                         return $this->ldap_auth_error("{$this->prefix}login_error", __('<strong>Simple LDAP Login Error</strong>: LDAP credentials are correct and user creation is allowed but an error occurred creating the user in WordPress. Actual error: ' . $new_user->get_error_message()));
                     }
                 } else {
+
+                    // Update user data
+                    wp_update_user(array("ID" => $user->ID) + $this->get_user_data($username, trim($this->get_setting('directory'))));
 
                     // update user meta data
                     $user_meta_data = $this->get_user_meta_data($username, trim($this->get_setting('directory')));
