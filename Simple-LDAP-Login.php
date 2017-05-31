@@ -3,7 +3,7 @@
   Plugin Name: Simple LDAP Login
   Plugin URI: http://clifgriffin.com/simple-ldap-login/
   Description:  Authenticate WordPress against LDAP.
-  Version: 1.8.1
+  Version: 1.8.2
   Author: Clif Griffin Development Inc.
   Author URI: http://cgd.io
  */
@@ -17,7 +17,8 @@ class SimpleLDAPLogin {
     var $adldap;
     var $ldap;
     var $network_version = null;
-    var $version = "181";
+    var $version = "182";
+    private $bindUserOk;
     // openssl constants
     private static $openssl_method = "AES-256-CBC";
 
@@ -38,12 +39,11 @@ class SimpleLDAPLogin {
 
             try {
                 $this->create_adldap();
+                $this->bindUserOk = true;
             } catch (adLDAPException $e) {
-                // Disable SSO
-                $this->set_setting('sso_enabled', FALSE);
-
                 // try create adldap again
-                $this->create_adldap();
+                $this->create_adldap(true);
+                $this->bindUserOk = false;
             }
         }
 
@@ -73,7 +73,7 @@ class SimpleLDAPLogin {
         }
     }
 
-    function create_adldap() {
+    function create_adldap($ignoreUser = false) {
         $this->adldap = new adLDAP(
                 array(
             "account_suffix" => trim($this->get_setting('account_suffix')),
@@ -81,8 +81,8 @@ class SimpleLDAPLogin {
             "base_dn" => trim($this->get_setting('base_dn')),
             "domain_controllers" => (array) $this->get_setting('domain_controllers'),
             "ad_port" => (int) $this->get_setting('ldap_port'),
-            "ad_username" => $this->is_sso_enabled() ? $this->get_setting('sso_search_user') : NULL,
-            "ad_password" => $this->is_sso_enabled() ? $this->get_sso_search_user_pass() : NULL
+            "ad_username" => !$ignoreUser && $this->is_sso_enabled() ? $this->get_setting('sso_search_user') : NULL,
+            "ad_password" => !$ignoreUser && $this->is_sso_enabled() ? $this->get_sso_search_user_pass() : NULL
                 )
         );
     }
@@ -98,7 +98,7 @@ class SimpleLDAPLogin {
     // SSO Implementation
     function login_sso() {
         // Respect current login
-        if (!is_user_logged_in() && $this->is_sso_configuration_ok() && $this->is_valid_call_sso()) {
+        if (!is_user_logged_in() && $this->is_sso_configuration_ok() && $this->is_valid_call_sso() && $this->bindUserOk) {
             // Automatic login 
             $usu = $this->authenticate(NULL, $this->get_sso_logged_user(), $this->get_sso_logged_user(), TRUE);
             wp_set_current_user($usu->ID, $usu->user_login);
