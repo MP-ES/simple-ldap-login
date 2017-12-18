@@ -372,6 +372,8 @@ class adLDAP {
         // Set some ldap options for talking to AD
         ldap_set_option($this->_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($this->_conn, LDAP_OPT_REFERRALS, 0);
+        ldap_set_option($this->_conn, LDAP_OPT_NETWORK_TIMEOUT, 5);
+        ldap_set_option($this->_conn, LDAP_OPT_TIMEOUT, 5);
 
         if ($this->_use_tls) {
             ldap_start_tls($this->_conn);
@@ -394,7 +396,7 @@ class adLDAP {
             $this->_base_dn = $this->find_base_dn();
         }
 
-        return (true);
+        return true;
     }
 
     /**
@@ -424,7 +426,7 @@ class adLDAP {
             return false;
         }
 
-        // Habilita bind SSO
+        // Enable SSO bind
         if ($sso_bind) {
             $password = "";
         }
@@ -2668,7 +2670,7 @@ class adLDAP {
         $password = "\"" . $password . "\"";
         $encoded = "";
         for ($i = 0; $i < strlen($password); $i++) {
-            $encoded.="{$password{$i}}\000";
+            $encoded .= "{$password{$i}}\000";
         }
         return ($encoded);
     }
@@ -2694,7 +2696,32 @@ class adLDAP {
      */
     protected function random_controller() {
         mt_srand(doubleval(microtime()) * 100000000); // For older PHP versions
-        return ($this->_domain_controllers[array_rand($this->_domain_controllers)]);
+        shuffle($this->_domain_controllers);
+        foreach ($this->_domain_controllers as $server) {
+            if ($this->service_ping($server)) {
+                return $server;
+            }
+        }
+        throw new adLDAPUnavailableServerException("No Domain Controller available.");
+    }
+
+    /**
+     * 
+     * Verify if a server is up
+     * 
+     * @param string $host
+     * @param int $port
+     * @param int $timeout
+     * @return int
+     */
+    protected function service_ping($host, $port = 389, $timeout = 1) {
+        $op = fsockopen($host, $port, $errno, $errstr, $timeout);
+        if (!$op) {
+            return 0; //DC is N/A
+        } else {
+            fclose($op); //explicitly close open socket connection
+            return 1; //DC is up & running, we can safely connect with ldap_connect
+        }
     }
 
     /**
@@ -2855,6 +2882,23 @@ class adLDAP {
  * }
  */
 class adLDAPException extends Exception {
+    
+}
+
+/**
+ * adLDAP Unavailable Server Handler
+ * 
+ * Exceptions of this type are thrown when don't have domain controllers available 
+ * Example:
+ * try {
+ *   $adldap = new adLDAP();
+ * }
+ * catch (adLDAPUnavailableServerException $e) {
+ *   echo $e;
+ *   exit();
+ * }
+ */
+class adLDAPUnavailableServerException extends Exception {
     
 }
 

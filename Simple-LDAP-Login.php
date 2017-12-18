@@ -3,7 +3,7 @@
   Plugin Name: Simple LDAP Login
   Plugin URI: http://clifgriffin.com/simple-ldap-login/
   Description:  Authenticate WordPress against LDAP.
-  Version: 1.8.2
+  Version: 1.8.3
   Author: Clif Griffin Development Inc.
   Author URI: http://cgd.io
  */
@@ -17,8 +17,9 @@ class SimpleLDAPLogin {
     var $adldap;
     var $ldap;
     var $network_version = null;
-    var $version = "182";
+    var $version = "183";
     private $bindUserOk;
+    private $domainControlerUnavailable;
     // openssl constants
     private static $openssl_method = "AES-256-CBC";
 
@@ -38,12 +39,17 @@ class SimpleLDAPLogin {
             require_once( plugin_dir_path(__FILE__) . "/includes/adLDAP.php" );
 
             try {
-                $this->create_adldap();
-                $this->bindUserOk = true;
-            } catch (adLDAPException $e) {
-                // try create adldap again
-                $this->create_adldap(true);
-                $this->bindUserOk = false;
+                try {
+                    $this->create_adldap();
+                    $this->bindUserOk = true;
+                } catch (adLDAPException $e) {
+                    // try create adldap again
+                    $this->create_adldap(true);
+                    $this->bindUserOk = false;
+                }
+            } catch (adLDAPUnavailableServerException $e) {
+                $this->domainControlerUnavailable = true;
+                error_log("Simple LDAP Login warning: {$e->getMessage()}");
             }
         }
 
@@ -378,8 +384,12 @@ class SimpleLDAPLogin {
             remove_filter('authenticate', 'wp_authenticate_username_password', 20, 3);
         }
 
-        // Sweet, let's try to authenticate our user and pass against LDAP
-        $auth_result = $this->ldap_auth($username, $password, trim($this->get_setting('directory')), $sso_auth);
+        try {
+            // Sweet, let's try to authenticate our user and pass against LDAP
+            $auth_result = $this->ldap_auth($username, $password, trim($this->get_setting('directory')), $sso_auth);
+        } catch (adLDAPUnavailableServerException $e) {
+            return $this->ldap_auth_error("{$this->prefix}login_error", __('<strong>Simple LDAP Login</strong>: no Domain Controler Available.'));
+        }
 
         if ($auth_result) {
             // Authenticated, does user have required groups, if any?
@@ -465,6 +475,9 @@ class SimpleLDAPLogin {
         $result = false;
 
         if ($directory == "ad") {
+            if ($this->domainControlerUnavailable) {
+                throw new adLDAPUnavailableServerException();
+            }
             $result = $this->adldap->authenticate($this->get_domain_username($username), $password, FALSE, $sso_auth);
         } elseif ($directory == "ol") {
             // TODO - implement SSO to others directories 
