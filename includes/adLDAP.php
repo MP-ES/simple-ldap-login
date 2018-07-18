@@ -2714,7 +2714,7 @@ class adLDAP {
      * @param int $timeout
      * @return int
      */
-    protected function service_ping($host, $port = 389, $timeout = 5) {
+    protected function service_ping($host, $port = 389, $timeout = 9) {
         $op = fsockopen($host, $port, $errno, $errstr, $timeout);
         if (!$op) {
             return 0; //DC is N/A
