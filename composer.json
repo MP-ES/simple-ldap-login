@@ -1,0 +1,5 @@
+{
+	"name": "mpes/simple-ldap-login",
+	"type": "wordpress-plugin",
+	"require": {}
+}
