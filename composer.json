@@ -1,6 +1,11 @@
 {
 	"name": "mpes/simple-ldap-login",
 	"type": "wordpress-plugin",
+	"source": {
+		"type": "git",
+		"reference": "master",
+		"url": "https://github.com/MP-ES/simple-ldap-login.git"
+	},
 	"require": {
 		"composer/installers": "~1.0"
 	}
