@@ -20,7 +20,7 @@ if (isset($_GET['tab'])) {
         <a href="<?php echo esc_url(add_query_arg(array('tab' => 'help'), $_SERVER['REQUEST_URI'])); ?>" class="nav-tab <?php echo $active_tab == 'help' ? 'nav-tab-active' : ''; ?>">Help</a>
     </h2>
 
-    <form method="post" action="<?php echo str_replace('%7E', '~', $_SERVER['REQUEST_URI']); ?>">
+    <form method="post" action="<?php echo esc_url( str_replace('%7E', '~', $_SERVER['REQUEST_URI']) ); ?>">
         <?php wp_nonce_field('save_sll_settings', 'save_the_sll'); ?>
 
         <?php if ($active_tab == "simple"): ?>
@@ -38,7 +38,7 @@ if (isset($_GET['tab'])) {
                     <tr>
                         <th scope="row" valign="top">Account Suffix</th>
                         <td>
-                            <input type="text" name="<?php echo esc_attr($this->get_field_name('account_suffix')); ?>" value="<?php echo htmlspecialchars($SimpleLDAPLogin->get_setting('account_suffix')); ?>" /><br/>
+                            <input type="text" name="<?php echo esc_attr($this->get_field_name('account_suffix')); ?>" value="<?php echo esc_attr(htmlspecialchars($SimpleLDAPLogin->get_setting('account_suffix'))); ?>" /><br/>
                             Often the suffix of your e-mail address. Example: @gmail.com
                         </td>
                     </tr>
@@ -182,7 +182,7 @@ if (isset($_GET['tab'])) {
                             <?php if (!$this->is_sso_configuration_ok()) { ?>
                                 <p style="color: red">Configuration Not Found.</p>
                             <?php } else { ?>
-                                <p style="color: green">Configuration Found. You are logged in as <b><?php echo $this->get_sso_logged_user(); ?></b>.</p>
+                                <p style="color: green">Configuration Found. You are logged in as <b><?php echo esc_html( $this->get_sso_logged_user() ); ?></b>.</p>
                             <?php } ?>
                         </td>
                     </tr>
@@ -219,11 +219,11 @@ if (isset($_GET['tab'])) {
                                 $bind_test = $this->sso_search_user_bind_test();
                                 if ($bind_test) {
                                     ?>
-                                    <p style="color: green">Bind OK for search user '<b><?php echo $SimpleLDAPLogin->get_setting('sso_search_user'); ?></b>'.</p>
+                                    <p style="color: green">Bind OK for search user '<b><?php echo esc_html( $SimpleLDAPLogin->get_setting('sso_search_user') ); ?></b>'.</p>
                                     <?php
                                 } else {
                                     ?>
-                                    <p style="color: red">Bind failure for search user '<b><?php echo $SimpleLDAPLogin->get_setting('sso_search_user'); ?></b>'.</p>
+                                    <p style="color: red">Bind failure for search user '<b><?php echo esc_html( $SimpleLDAPLogin->get_setting('sso_search_user') ); ?></b>'.</p>
                                     <?php
                                 }
                             }
@@ -276,7 +276,7 @@ if (isset($_GET['tab'])) {
             <h3>Additional user data</h3>
             <p>Additional user data can be stored as user meta data. You can specify the LDAP
                 attributes and the associated wordpress meta keys in the format <i>&lt;ldap_attribute_name&gt;:&lt;wordpress_meta_key&gt;:&lt;type&gt;</i>. Multiple attributes can be given on separate lines. 
-                <b>Keep in your mind that the final <i>wordpress_meta_key</i> will be two meta keys, using the suffixes below, like, <i>wordpress_meta_key_<?php echo $SimpleLDAPLogin->get_setting('meta_data_suffix_ldap'); ?></i> and <i>wordpress_meta_key_<?php echo $SimpleLDAPLogin->get_setting('meta_data_suffix_wp'); ?></i>.</b></p>
+                <b>Keep in your mind that the final <i>wordpress_meta_key</i> will be two meta keys, using the suffixes below, like, <i>wordpress_meta_key_<?php echo esc_html($SimpleLDAPLogin->get_setting('meta_data_suffix_ldap')); ?></i> and <i>wordpress_meta_key_<?php echo esc_html($SimpleLDAPLogin->get_setting('meta_data_suffix_wp')); ?></i>.</b></p>
             <p> Example:<br/><i>phone:user_phone_number:number</i><br/><i>address:user_home_address:string</i></p>
             <table class="form-table" style="margin-bottom: 20px;">
                 <tbody>
@@ -321,7 +321,7 @@ if (isset($_GET['tab'])) {
             <h4>Testing</h4>
             <p>The most effective way to test logins is to use two browsers. In other words, keep the WordPress Dashboard open in Chrome, and use Firefox to try logging in. This will give you real time feedback on your settings and prevent you from inadvertently locking yourself out.</p>
             <h4>Which raises the question, what happens if I get locked out?</h4>
-            <p>If you accidentally lock yourself out, the easiest way to get back in is to rename <strong><?php echo plugin_dir_path(__FILE__); ?></strong> to something else and then refresh. WordPress will detect the change and disable Simple LDAP Login. You can then rename the folder back to its previous name.</p>
+            <p>If you accidentally lock yourself out, the easiest way to get back in is to rename <strong><?php echo esc_html( plugin_dir_path(__FILE__) ); ?></strong> to something else and then refresh. WordPress will detect the change and disable Simple LDAP Login. You can then rename the folder back to its previous name.</p>
         <?php endif; ?>
     </form>
 </div>
