@@ -3,7 +3,7 @@
   Plugin Name: Simple LDAP Login
   Plugin URI: http://clifgriffin.com/simple-ldap-login/
   Description:  Authenticate WordPress against LDAP.
-  Version: 1.8.3
+  Version: 1.8.5
   Author: Clif Griffin Development Inc.
   Author URI: http://cgd.io
  */
@@ -17,7 +17,7 @@ class SimpleLDAPLogin {
     var $adldap;
     var $ldap;
     var $network_version = null;
-    var $version = "183";
+    var $version = "185";
     private $bindUserOk;
     private $domainControlerUnavailable;
     // openssl constants
