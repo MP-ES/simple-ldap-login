@@ -1,59 +1,61 @@
-# Configurando SSO no Ambiente Debian/Apache #
+# Configurando SSO no Ambiente Debian/Apache
 
 Siga este documento para configurar o SSO (Single Sign-on) entre a autenticação do Windows e o servidor Apache, usando o módulo **auth_ntlm_winbind**.
 
-## Configurando o nome da máquina ##
+## Configurando o nome da máquina
+
 Edite o arquivo `/etc/hosts` e configure o nome completo da máquina, seguindo o modelo abaixo:
 
-````
+```hosts
 127.0.0.1       localhost
 127.0.1.1       WEB1.seu.dominio       WEB1
 ```
 
 No arquivo `/etc/hostname`, informe o nome da máquina conforme configurado no arquivo `/etc/hosts`:
 
-```
+```hostname
 WEB1
 ```
 
-## Sincronizando relógio com o Active Directory ##
+## Sincronizando relógio com o Active Directory
+
 Para evitar problemas ao incluir a máquina no domínio, você deve sincronizar o relógio da máquina Debian com o relógio do AD.
 Instale o ntp:
 
-```
+```bash
 aptitude intall ntpdate ntp
 ```
 
 Edite o arquivo `/etc/ntp.conf`, deixando apenas os servidores LDAP's. Exemplo:
 
-```
+```bash
 # IP do servidor LDAP
 server 192.168.1.1
 ```
 
 Reinicie o serviço:
 
-```
+```bash
 service ntp restart
 ```
 
 Sincronize o relógio:
 
-```
+```bash
 ntpdate -s 192.168.1.1
 ```
 
-## Configurando Kerberos ##
+## Configurando Kerberos
 
 Instale os seguintes pacotes:
 
-```
+```bash
 aptitude install krb5-user krb5-config libpam-krb5
 ```
 
 Edite o arquivo `/etc/krb5.conf` de acordo com o exemplo abaixo:
 
-```
+```bash
 [logging]
         default = FILE:/var/log/krb5.log
         kdc = FILE:/var/log/krb5kdc.log
@@ -79,91 +81,90 @@ SEU.DOMINIO = {
 
 Para testar a configuração, use os comandos abaixo:
 
-```
+```bash
 kinit <usuarioAD> # Se estiver Ok, pedirá sua senha e finalizará sem mensagem.
 ```
 
-```
+```bash
 klist # Irá exibir o token gerado pelo kinit anterior.
 ```
 
-```
+```bash
 kdestroy # Destrói o token gerado.
 ```
 
-## Configurando Samba ##
+## Configurando Samba
 
 Instale os seguintes pacotes:
 
-```
+```bash
 aptitude install samba winbind libnss-winbind libpam-winbind
 ```
 
 Edite o arquivo `/etc/samba/smb.conf` seguindo o exemplo a seguir (consulte a documentação do Samba para entender cada parâmetro):
 
-```
+```bash
 [global]
-	security = ADS
-	realm= SEU.DOMINIO 
-	workgroup = DOMINIO 
-	netbios name = WEB1
-	server string = Descrição da máquina WEB1
+  security = ADS
+  realm= SEU.DOMINIO 
+  workgroup = DOMINIO 
+  netbios name = WEB1
+  server string = Descrição da máquina WEB1
 
-	idmap config * : range = 2000-9999
-	idmap config * : backend = tdb
+  idmap config * : range = 2000-9999
+  idmap config * : backend = tdb
 
-	idmap config DOMINIO : schema_mode = rfc2307
-	idmap config DOMINIO : range = 100000-399999
-	idmap config DOMINIO : default = yes
-	idmap config DOMINIO : backend = rid
+  idmap config DOMINIO : schema_mode = rfc2307
+  idmap config DOMINIO : range = 100000-399999
+  idmap config DOMINIO : default = yes
+  idmap config DOMINIO : backend = rid
 
-	winbind enum users = yes
-	winbind enum groups = yes
-	
-	template homedir = /home/%D/%U
-	template shell = /bin/bash 
-	
-	client use spnego = yes
-	winbind use default domain = yes
-	restrict anonymous = 2
-	winbind refresh tickets = yes 
+  winbind enum users = yes
+  winbind enum groups = yes
+
+  template homedir = /home/%D/%U
+  template shell = /bin/bash 
+
+  client use spnego = yes
+  winbind use default domain = yes
+  restrict anonymous = 2
+  winbind refresh tickets = yes 
 ```
 
 **Dica**: Para testar a configuração do Samba, execute o comando `testparm`.
 
 Reinicie o serviço:
 
-```
+```bash
 service winbind restart
 service smbd restart
 ```
 
-## Ingressando a máquina no domínio ##
+## Ingressando a máquina no domínio
 
-Execute o comando abaixo: 
+Execute o comando abaixo:
 
-```
+```bash
 net ads join -U usuarioAdministradorDoDominio
 ```
 
-
 Reinicie o Winbind:
 
-```
+```bash
 service winbind restart
 ```
 
-## Configurando Apache ##
+## Configurando Apache
 
 Instale o módulo **auth_ntlm_winbind** e o habilite:
 
-```
+```bash
 aptitude install libapache2-mod-auth-ntlm-winbind
 a2enmod auth_ntlm_winbind
 ```
 
-Edite o arquivo `/etc/apache2/apache2.conf` e adicione o módulo de autenticação à pasta do Wordpress. 
-Se o Wordpress estiver instalado na pasta `/var/www`, a configuração necessária seria:
+Edite o arquivo `/etc/apache2/apache2.conf` e adicione o módulo de autenticação à pasta do WordPress.
+Se o WordPress estiver instalado na pasta `/var/www`, a configuração necessária seria:
 
 ```ApacheConf
 <Directory /var/www/>
@@ -180,7 +181,7 @@ Se o Wordpress estiver instalado na pasta `/var/www`, a configuração necessár
 
 Execute os comandos a seguir, para dar permissão ao usuário do Apache e corrigir um bug:
 
-```
+```bash
 usermod -a -G winbindd_priv www-data
 chgrp winbindd_priv /var/lib/samba/winbindd_privileged
 ln -s /var/lib/samba/winbindd_privileged/pipe /var/run/samba/winbindd_privileged/pipe
@@ -188,16 +189,12 @@ ln -s /var/lib/samba/winbindd_privileged/pipe /var/run/samba/winbindd_privileged
 
 Reinicie o Apache:
 
-```
+```bash
 service apache2 restart
 ```
 
-Feito isso, basta acessar o Wordpress e habilitar o **SSO** na tela de configuração do `simple-LDAP-plugin`.
+Feito isso, basta acessar o WordPress e habilitar o **SSO** na tela de configuração do `simple-LDAP-plugin`.
 
-## Configurando o Firefox ##
+## Configurando o Firefox
 
-No caso do Firefox, você deve adicionar o seu domínio como confiável. Para isso, através do 
-`about:config` edite a chave `network.automatic-ntlm-auth.trusted-uris`, colocando o seu domínio na forma
-`.seu.dominio`.
-
-
+No caso do Firefox, você deve adicionar o seu domínio como confiável. Para isso, através do `about:config` edite a chave `network.automatic-ntlm-auth.trusted-uris`, colocando o seu domínio na forma `.seu.dominio`.

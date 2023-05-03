@@ -1,56 +1,23 @@
 === Plugin Name ===
-Contributors: clifgriffin
-Donate link: http://cgd.io
+Contributors: clifgriffin,estevao90,MPES
 Tags: LDAP, authentication, login, active directory, adLDAP
-Requires at least: 3.4
-Tested up to: 4.5.0
-Stable tag: 1.6.0
+Requires at least: 6.0
+Tested up to: 6.2
+Stable tag: 2.0.0
 License: GPLv2 or later
 
-Integrating WordPress with LDAP shouldn't be difficult. Now it isn't. Simple LDAP Login provides all of the features, none of the hassles.
+A simple way to authenticate to your WordPress site using LDAP.
 
 == Description ==
-Having a single login for every service is a must in large organizations. This plugin allows you to integrate WordPress with LDAP quickly and easily. Like, really really easy.
-
-**Contributing**
-This is a community project now. Most development is done by users like you who find bugs and fix them, or find new ways to make the plugin more powerful for everyone.
-
-The easiest way to contribute to this plugin is to submit a GitHub pull request. Here's the repo:
-https://github.com/clifgriffin/simple-ldap-login
-
-**Support**
-
-If you need support, file an issue here:
-https://github.com/clifgriffin/simple-ldap-login/issues
-
-**Special Requests**
-
-If you need a customization or change specific to your install, I am available for hire. Shoot me an e-mail: clifgriffin[at]gmail.com
-
-= Features =
-
-* Supports Active Directory and OpenLDAP (and other directory systems which comply to the LDAP standard, such as OpenDS)
-* Supports TLS
-* Uses up-to-date methods for WordPress authentication routines.
-* Authenticates existing WordPress usernames against LDAP.
-* Can be configured to automatically create WordPress users for valid LDAP logins.
-* You can restrict logins based on one or more LDAP groups.
-* Intuitive control panel.
-
-= Architecture =
-Simple LDAP Login adds an authentication filter to WordPress that authentication requests must pass. In doing so, it makes several decisions.
-
-* Can the provided credentials be authenticated against LDAP?
-* * If so, is the LDAP user a member of the required LDAP groups (if any)?
-* * * Does a matching WordPress user exist?
-* * * * If so, log the user in.
-* * * * If not, is user creation enabled?
-* * * * * Create the user and log them in.
-
-This is high level overview. This should answer the philosophical questions about how the plugin works. If the plugin is unable to authenticate the user, it should pass it down the chain to WordPress. (Unless LDAP Exclusive is turned on, in which case it won't.)
-
+This plugin allows to authenticate users against LDAP directories.
+It supports OpenLDAP and Active Directory servers. Authenticated users can be automatically created in WordPress.
 
 == Changelog ==
+**Version 2.0.0**
+* Breaking change: many changes in the plugin structure, please test before upgrading.
+* Added support for WordPress 6.2
+* Added support for PHP 8.0 and 8.1
+
 **Version 1.6.0**
 
 * New filter sll_remove_default_authentication_hook lets you override local password fallback.

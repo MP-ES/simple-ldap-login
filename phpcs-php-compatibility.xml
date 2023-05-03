@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!-- cSpell:ignore mcrypt arcfour rijndael mhash -->
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="MPES" xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd">
+
+  <description>The custom ruleset for the MPES plugin, especially for PHP Compatibility</description>
+
+  <!-- For help in understanding this file: https://github.com/squizlabs/PHP_CodeSniffer/wiki/Annotated-ruleset.xml -->
+  <!-- For help in using PHPCS: https://github.com/squizlabs/PHP_CodeSniffer/wiki/Usage -->
+
+  <!-- What to scan -->
+  <file>.</file>
+  <!-- Ignoring Files and Folders:
+		https://github.com/squizlabs/PHP_CodeSniffer/wiki/Advanced-Usage#ignoring-files-and-folders -->
+  <exclude-pattern>vendor/</exclude-pattern>
+
+  <!-- How to scan -->
+  <!-- Formats of the report -->
+  <arg name="report" value="full,summary,source"/>
+  <!-- Enables cache -->
+  <arg name="cache"/>
+  <!-- Enables parallel processing when available for faster results. -->
+  <arg name="parallel" value="100"/>
+  <!-- Limit to PHP files -->
+  <arg name="extensions" value="php"/>
+
+  <rule ref="PHPCompatibility">
+    <!-- It's not a problem for legacy code -->
+    <exclude name="PHPCompatibility.Attributes.NewAttributes.Found"/>
+  </rule>
+</ruleset>
