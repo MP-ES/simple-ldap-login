@@ -20,3 +20,26 @@ A simple way to authenticate to your WordPress site using LDAP. It's a fork of [
 1. If you don't get the settings right the first time, don't fret! Just use your WordPress credentials. They should always work
 1. Once you have the settings correct, you can toggle LDAP Exclusive mode (if you like).
 1. To make your life easier, consider using two different browsers (e.g., Chrome and Firefox) to do testing.  Change settings in one. Test in the other. This will prevent any chance of being locked out.
+
+## Development environment
+
+### Basic commands
+
+```bash
+# Install dependencies
+composer install
+```
+
+### Lando
+
+We use Lando to create a WP installation to test this plugin. You can find the instructions to install it [here](https://docs.lando.dev/basics/installation.html).
+
+Once you have Lando installed, you can run the following commands to start the development environment:
+
+```bash
+# Start the development environment
+lando start
+
+# Reset the development environment
+lando destroy && rm -rf wp-www
+```
