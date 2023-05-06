@@ -11,6 +11,7 @@
   <!-- Ignoring Files and Folders:
 		https://github.com/squizlabs/PHP_CodeSniffer/wiki/Advanced-Usage#ignoring-files-and-folders -->
   <exclude-pattern>vendor/</exclude-pattern>
+  <exclude-pattern>wp-www/</exclude-pattern>
 
   <!-- How to scan -->
   <!-- Formats of the report -->
@@ -38,6 +39,8 @@
     <exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_value"/>
     <exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_query"/>
     <exclude name="WordPress.DB.SlowDBQuery.slow_db_query_tax_query"/>
+    <!-- Ignoring dynamic hooks name rule -->
+    <exclude name="WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound"/>
 
     <!-- Temporary disables -->
     <exclude name="Squiz.Commenting.VariableComment.Missing"/>
@@ -54,6 +57,7 @@
     <properties>
       <property name="prefixes" type="array">
         <element value="sldap"/>
+        <element value="simple_ldap_login"/>
         <element value="SimpleLDAPLogin"/>
       </property>
     </properties>

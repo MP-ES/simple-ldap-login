@@ -38,8 +38,13 @@ Once you have Lando installed, you can run the following commands to start the d
 
 ```bash
 # Start the development environment
+# username: admin
+# password: password
 lando start
 
 # Reset the development environment
 lando destroy && rm -rf wp-www
+
+# Destroy the lando containers
+lando poweroff
 ```
