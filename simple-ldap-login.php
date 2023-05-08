@@ -536,7 +536,15 @@ class SimpleLDAPLogin {
 			$result = $this->adldap->authenticate( $this->get_domain_username( $username ), $password, false, $sso_auth );
 		} elseif ( $directory === 'ol' ) {
 			// TODO - implement SSO to others directories.
-			$this->ldap = ldap_connect( join( ' ', (array) $this->get_setting( 'domain_controllers' ) ), (int) $this->get_setting( 'ldap_port' ) );
+
+			$domain_controllers = (array) $this->get_setting( 'domain_controllers' );
+			$ldap_port          = (int) $this->get_setting( 'ldap_port' );
+
+			if ( empty( $domain_controllers ) || empty( $ldap_port ) ) {
+				return false;
+			}
+
+			$this->ldap = ldap_connect( join( ' ', $domain_controllers ), $ldap_port );
 			ldap_set_option( $this->ldap, LDAP_OPT_PROTOCOL_VERSION, (int) $this->get_setting( 'ldap_version' ) );
 			if ( sldap_str_true( $this->get_setting( 'use_tls' ) ) ) {
 				ldap_start_tls( $this->ldap );
