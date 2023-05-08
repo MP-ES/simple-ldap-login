@@ -1,0 +1,11 @@
+docs/ export-ignore
+
+.gitignore export-ignore
+
+.lando export-ignore
+
+composer.* export-ignore
+
+phpcs* export-ignore
+
+README.md export-ignore
