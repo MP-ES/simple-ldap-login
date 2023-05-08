@@ -1,1 +1,6 @@
-/nbproject/private*
+vendor
+node_modules
+
+*.zip
+
+wp-www
