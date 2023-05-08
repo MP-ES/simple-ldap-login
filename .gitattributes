@@ -1,8 +1,8 @@
 docs/ export-ignore
 
-.gitignore export-ignore
+.git* export-ignore
 
-.lando export-ignore
+.lando* export-ignore
 
 composer.* export-ignore
 
