@@ -2704,7 +2704,7 @@ class adLDAP {
 	 * @return string
 	 */
 	protected function random_controller() {
-		mt_srand( doubleval( microtime() ) * 100000000 ); // For older PHP versions
+		mt_srand( (int) round( microtime(true) * 100000000 ) );
 		shuffle( $this->_domain_controllers );
 		foreach ( $this->_domain_controllers as $server ) {
 			if ( $this->service_ping( $server ) ) {
