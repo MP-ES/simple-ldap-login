@@ -3,7 +3,7 @@
  * Plugin Name: Simple LDAP Login (by MPES)
  * Plugin URI: https://github.com/MP-ES/simple-ldap-login
  * Description:  Authenticate WordPress against LDAP.
- * Version: 2.0.0
+ * Version: 2.0.1
  * Author: MPES
  * Original Author: Clif Griffin
  * Text Domain: simple-ldap-login
@@ -26,7 +26,7 @@ class SimpleLDAPLogin {
 	private $adldap;
 	private $ldap;
 	private $network_version = null;
-	private $version         = '200';
+	private $version         = '201';
 	private $bind_user_success;
 	private $domain_controler_unavailable;
 	private $dn;
