@@ -48,3 +48,16 @@ lando destroy && rm -rf wp-www
 # Destroy the lando containers
 lando poweroff
 ```
+
+## Changelog
+
+### Version 2.0.2
+
+* Re-release of 2.0.1: the `v2.0.1` git tag had been cut against the wrong commit (one whose plugin header still read `Version: 2.0.0`), which broke the GitHub Actions release workflow. No functional changes beyond 2.0.1 — this bump only fixes the tag/version mismatch so the release pipeline succeeds.
+
+### Version 2.0.1
+
+* Fixed a PHP 8.1+ deprecation warning ("Implicit conversion from float to int loses precision") in `adLDAP::random_controller()` (`lib/adLDAP.php`), caused by passing a float directly to `mt_srand()`. This warning was being printed to output before WordPress could send the login redirect headers, resulting in "Cannot modify header information - headers already sent" errors right after a successful LDAP login.
+* Bumped the plugin version so WordPress correctly detects and applies this update.
+
+See [readme.txt](readme.txt) for the full changelog.
