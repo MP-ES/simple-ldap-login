@@ -48,3 +48,7 @@ lando destroy && rm -rf wp-www
 # Destroy the lando containers
 lando poweroff
 ```
+
+## Changelog
+
+See [readme.txt](readme.txt) for the full changelog.

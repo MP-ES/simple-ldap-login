@@ -3,7 +3,7 @@ Contributors: clifgriffin,estevao90,MPES
 Tags: LDAP, authentication, login, active directory, adLDAP
 Requires at least: 6.0
 Tested up to: 6.2
-Stable tag: 2.0.0
+Stable tag: 2.0.2
 License: GPLv2 or later
 
 A simple way to authenticate to your WordPress site using LDAP.
@@ -13,6 +13,13 @@ This plugin allows to authenticate users against LDAP directories.
 It supports OpenLDAP and Active Directory servers. Authenticated users can be automatically created in WordPress.
 
 == Changelog ==
+**Version 2.0.2**
+* Re-release of 2.0.1: the `v2.0.1` git tag had been cut against the wrong commit (one whose plugin header still read `Version: 2.0.0`), which broke the GitHub Actions release workflow. No functional changes beyond 2.0.1 — this bump only fixes the tag/version mismatch so the release pipeline succeeds.
+
+**Version 2.0.1**
+* Fixed a PHP 8.1+ deprecation warning ("Implicit conversion from float to int loses precision") in `adLDAP::random_controller()`, caused by passing a float directly to `mt_srand()`. This warning was being printed to output before WordPress could send the login redirect headers, resulting in "Cannot modify header information - headers already sent" errors right after a successful LDAP login.
+* Bumped the plugin version so WordPress correctly detects and applies this update.
+
 **Version 2.0.0**
 * Breaking change: many changes in the plugin structure, please test before upgrading.
 * Added support for WordPress 6.2
